@@ -9,8 +9,8 @@ var constants = {
     initialEnemyMaxDelay: 1000,
     newEnemyMinDelay: 100,
     newEnemyMaxDelay: 1800,
-    minEnemySpeed: 20,  // px/ms
-    maxEnemySpeed: 100
+    minEnemySpeed: 100,  // px/ms
+    maxEnemySpeed: 250
 }
 
 // Actors (Player & Enemies)
@@ -26,7 +26,7 @@ Actor.prototype.render = function() {
 // Enemy
 var Enemy = function(){
     numRoad = Math.floor(Math.random() * 3) + 1;
-    Actor.call(this, 0, constants.offsetY + (constants.stepY * numRoad), 'images/enemy-bug.png');
+    Actor.call(this, -constants.stepX, constants.offsetY + (constants.stepY * numRoad), 'images/enemy-bug.png');
     this.speed = Math.floor(Math.random() * (constants.maxEnemySpeed - constants.minEnemySpeed)) + constants.minEnemySpeed;
 }
 Enemy.prototype = Object.create(Actor.prototype);
