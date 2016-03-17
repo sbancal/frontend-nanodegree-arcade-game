@@ -5,6 +5,8 @@ var constants = {
     stepY: 83,
     nbSlabX: 5,
     nbSlabY: 6,
+    initialPlayerX: 202,
+    initialPlayerY: 300,
     initialEnemyMinDelay: 100,  // ms
     initialEnemyMaxDelay: 1000,
     newEnemyMinDelay: 100,
@@ -33,6 +35,9 @@ Enemy.prototype = Object.create(Actor.prototype);
 Enemy.prototype.constructor = Enemy;
 Enemy.prototype.update = function(dt) {
     this.x += this.speed * dt;
+    if (Math.abs(this.x - player.x) < constants.stepX && Math.abs(this.y - player.y) < constants.stepY){
+        player.collision();
+    }
     if (this.x >= (constants.nbSlabX * constants.stepX)){
         // I've reach the end
         var index = allEnemies.indexOf(this);
@@ -57,7 +62,7 @@ Enemy.newOne = function(context){
 
 // Player
 var Player = function() {
-    Actor.call(this, 202, 300, 'images/char-boy.png');
+    Actor.call(this, constants.initialPlayerX, constants.initialPlayerY, 'images/char-boy.png');
     this.nextMove = undefined;
 }
 Player.prototype = Object.create(Actor.prototype);
@@ -76,6 +81,10 @@ Player.prototype.update = function() {
         this.y += constants.stepY;
     }
     this.nextMove = undefined;
+};
+Player.prototype.collision = function () {
+    this.x = constants.initialPlayerX;
+    this.y = constants.initialPlayerY;
 };
 
 var player = new Player();
