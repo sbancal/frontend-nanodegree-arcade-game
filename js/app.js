@@ -3,6 +3,8 @@ var constants = {
     offsetY: -32,
     stepX: 101,
     stepY: 83,
+    nbSlabX: 5,
+    nbSlabY: 6,
     initialEnemyMinDelay: 100,  // ms
     initialEnemyMaxDelay: 1000,
     newEnemyMinDelay: 100,
@@ -31,6 +33,12 @@ Enemy.prototype = Object.create(Actor.prototype);
 Enemy.prototype.constructor = Enemy;
 Enemy.prototype.update = function(dt) {
     this.x += this.speed * dt;
+    if (this.x >= (constants.nbSlabX * constants.stepX)){
+        // I've reach the end
+        var index = allEnemies.indexOf(this);
+        allEnemies.splice(index, 1);
+        Enemy.newOne();
+    }
 };
 Enemy.newOne = function(context){
     if (context == "initial"){
