@@ -1,39 +1,81 @@
-// Enemies our player must avoid
-var Enemy = function() {
-    // Variables applied to each of our instances go here,
-    // we've provided one for you to get started
+var constants = {
+    offsetX: 0,
+    offsetY: -32,
+    stepX: 101,
+    stepY: 83,
+    initialEnemyMinDelay: 100,
+    initialEnemyMaxDelay: 1000,
+    newEnemyMinDelay: 100,
+    newEnemyMaxDelay: 1800
+}
 
-    // The image/sprite for our enemies, this uses
-    // a helper we've provided to easily load images
-    this.sprite = 'images/enemy-bug.png';
+// Actors (Player & Enemies)
+var Actor = function(x, y, sprite) {
+    this.sprite = sprite;
+    this.x = x;
+    this.y = y;
 };
-
-// Update the enemy's position, required method for game
-// Parameter: dt, a time delta between ticks
-Enemy.prototype.update = function(dt) {
-    // You should multiply any movement by the dt parameter
-    // which will ensure the game runs at the same speed for
-    // all computers.
-};
-
-// Draw the enemy on the screen, required method for game
-Enemy.prototype.render = function() {
+Actor.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-// Now write your own player class
-// This class requires an update(), render() and
-// a handleInput() method.
+// Enemy
+var Enemy = function(numRoad){
+    Actor.call(this, 0, constants.offsetY + (constants.stepY * numRoad), 'images/enemy-bug.png');
+    this.speed = 2;
+}
+Enemy.prototype = Object.create(Actor.prototype);
+Enemy.prototype.constructor = Enemy;
+Enemy.prototype.update = function(dt) {
+    // console.log("update enemy " + this.y + "(" + dt + ")");
+    // multiply any movement by the dt parameter
+};
+Enemy.newOne = function(context){
+    if (context == "initial"){
+        var delay = Math.random() * (constants.initialEnemyMaxDelay - constants.initialEnemyMinDelay) + constants.initialEnemyMinDelay;
+        setTimeout(function(){
+            numRoad = Math.floor(Math.random() * 3) + 1;
+            allEnemies.push(new Enemy(numRoad))
+        }, delay);
+    }else{
+        var delay = Math.random() * (constants.newEnemyMaxDelay - constants.newEnemyMinDelay) + constants.newEnemyMinDelay;
+        setTimeout(function(){
+            numRoad = Math.floor(Math.random() * 3) + 1;
+            allEnemies.push(new Enemy(numRoad))
+        }, delay);
+    }
+}
 
 
-// Now instantiate your objects.
-// Place all enemy objects in an array called allEnemies
-// Place the player object in a variable called player
+// Player
+var Player = function() {
+    Actor.call(this, 202, 300, 'images/char-boy.png');
+    this.nextMove = undefined;
+}
+Player.prototype = Object.create(Actor.prototype);
+Player.prototype.constructor = Player;
+Player.prototype.handleInput = function (key) {
+    this.nextMove = key;
+};
+Player.prototype.update = function() {
+    if (this.nextMove === "left"){
+        this.x -= constants.stepX;
+    }else if (this.nextMove === "up") {
+        this.y -= constants.stepY;
+    }else if (this.nextMove === "right") {
+        this.x += constants.stepX;
+    }else if (this.nextMove === "down") {
+        this.y += constants.stepY;
+    }
+    this.nextMove = undefined;
+};
 
+var player = new Player();
+var allEnemies = [];
+Enemy.newOne("initial");
+Enemy.newOne("initial");
+Enemy.newOne("initial");
 
-
-// This listens for key presses and sends the keys to your
-// Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function(e) {
     var allowedKeys = {
         37: 'left',
@@ -41,6 +83,5 @@ document.addEventListener('keyup', function(e) {
         39: 'right',
         40: 'down'
     };
-
     player.handleInput(allowedKeys[e.keyCode]);
 });
