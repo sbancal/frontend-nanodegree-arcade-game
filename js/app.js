@@ -6,7 +6,7 @@ var constants = {
     nbSlabX: 5,
     nbSlabY: 6,
     initialPlayerX: 202,
-    initialPlayerY: 300,
+    initialPlayerY: 332,
     initialEnemyMinDelay: 100,  // ms
     initialEnemyMaxDelay: 1000,
     newEnemyMinDelay: 100,
@@ -22,13 +22,13 @@ var Actor = function(x, y, sprite) {
     this.y = y;
 };
 Actor.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y + constants.offsetY);
 };
 
 // Enemy
 var Enemy = function(){
     numRoad = Math.floor(Math.random() * 3) + 1;
-    Actor.call(this, -constants.stepX, constants.offsetY + (constants.stepY * numRoad), 'images/enemy-bug.png');
+    Actor.call(this, -constants.stepX, constants.stepY * numRoad, 'images/enemy-bug.png');
     this.speed = Math.floor(Math.random() * (constants.maxEnemySpeed - constants.minEnemySpeed)) + constants.minEnemySpeed;
 }
 Enemy.prototype = Object.create(Actor.prototype);
@@ -80,16 +80,22 @@ Player.prototype.init = function () {
 Player.prototype.update = function() {
     if (this.state == "walking"){
         if (this.nextMove === "left"){
-            this.x -= constants.stepX;
+            if (this.x > 0){
+                this.x -= constants.stepX;
+            }
         }else if (this.nextMove === "up") {
             this.y -= constants.stepY;
-            if (this.y < 0){
+            if (this.y < constants.stepY){
                 this.win();
             }
         }else if (this.nextMove === "right") {
-            this.x += constants.stepX;
+            if (this.x < (constants.nbSlabX - 1) * constants.stepX){
+                this.x += constants.stepX;
+            }
         }else if (this.nextMove === "down") {
-            this.y += constants.stepY;
+            if (this.y < (constants.nbSlabY - 1) * constants.stepY){
+                this.y += constants.stepY;
+            }
         }
         this.nextMove = undefined;
     }
