@@ -3,10 +3,12 @@ var constants = {
     offsetY: -32,
     stepX: 101,
     stepY: 83,
-    initialEnemyMinDelay: 100,
+    initialEnemyMinDelay: 100,  // ms
     initialEnemyMaxDelay: 1000,
     newEnemyMinDelay: 100,
-    newEnemyMaxDelay: 1800
+    newEnemyMaxDelay: 1800,
+    minEnemySpeed: 20,  // px/ms
+    maxEnemySpeed: 100
 }
 
 // Actors (Player & Enemies)
@@ -20,28 +22,26 @@ Actor.prototype.render = function() {
 };
 
 // Enemy
-var Enemy = function(numRoad){
+var Enemy = function(){
+    numRoad = Math.floor(Math.random() * 3) + 1;
     Actor.call(this, 0, constants.offsetY + (constants.stepY * numRoad), 'images/enemy-bug.png');
-    this.speed = 2;
+    this.speed = Math.floor(Math.random() * (constants.maxEnemySpeed - constants.minEnemySpeed)) + constants.minEnemySpeed;
 }
 Enemy.prototype = Object.create(Actor.prototype);
 Enemy.prototype.constructor = Enemy;
 Enemy.prototype.update = function(dt) {
-    // console.log("update enemy " + this.y + "(" + dt + ")");
-    // multiply any movement by the dt parameter
+    this.x += this.speed * dt;
 };
 Enemy.newOne = function(context){
     if (context == "initial"){
         var delay = Math.random() * (constants.initialEnemyMaxDelay - constants.initialEnemyMinDelay) + constants.initialEnemyMinDelay;
         setTimeout(function(){
-            numRoad = Math.floor(Math.random() * 3) + 1;
-            allEnemies.push(new Enemy(numRoad))
+            allEnemies.push(new Enemy())
         }, delay);
     }else{
         var delay = Math.random() * (constants.newEnemyMaxDelay - constants.newEnemyMinDelay) + constants.newEnemyMinDelay;
         setTimeout(function(){
-            numRoad = Math.floor(Math.random() * 3) + 1;
-            allEnemies.push(new Enemy(numRoad))
+            allEnemies.push(new Enemy())
         }, delay);
     }
 }
