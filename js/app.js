@@ -62,29 +62,51 @@ Enemy.newOne = function(context){
 
 // Player
 var Player = function() {
-    Actor.call(this, constants.initialPlayerX, constants.initialPlayerY, 'images/char-boy.png');
-    this.nextMove = undefined;
+    Actor.call(this);
+    this.init();
 }
 Player.prototype = Object.create(Actor.prototype);
 Player.prototype.constructor = Player;
 Player.prototype.handleInput = function (key) {
     this.nextMove = key;
 };
-Player.prototype.update = function() {
-    if (this.nextMove === "left"){
-        this.x -= constants.stepX;
-    }else if (this.nextMove === "up") {
-        this.y -= constants.stepY;
-    }else if (this.nextMove === "right") {
-        this.x += constants.stepX;
-    }else if (this.nextMove === "down") {
-        this.y += constants.stepY;
-    }
-    this.nextMove = undefined;
-};
-Player.prototype.collision = function () {
+Player.prototype.init = function () {
+    this.state = "walking";
     this.x = constants.initialPlayerX;
     this.y = constants.initialPlayerY;
+    this.sprite = "images/char-boy.png";
+    this.nextMove = undefined;
+};
+Player.prototype.update = function() {
+    if (this.state == "walking"){
+        if (this.nextMove === "left"){
+            this.x -= constants.stepX;
+        }else if (this.nextMove === "up") {
+            this.y -= constants.stepY;
+            if (this.y < 0){
+                this.win();
+            }
+        }else if (this.nextMove === "right") {
+            this.x += constants.stepX;
+        }else if (this.nextMove === "down") {
+            this.y += constants.stepY;
+        }
+        this.nextMove = undefined;
+    }
+};
+Player.prototype.collision = function () {
+    this.state = "dead";
+    this.sprite = "images/Rock.png";
+    setTimeout(function() {
+        player.init();
+    }, 1000)
+};
+Player.prototype.win = function () {
+    this.state = "win";
+    this.sprite = "images/Star.png";
+    setTimeout(function() {
+        player.init();
+    }, 1000);
 };
 
 var player = new Player();
